@@ -1,0 +1,50 @@
+import csv
+import os
+from tabulate import tabulate
+
+pasta_arquivos = r'C:\Users\mariovaldobf\Desktop\Nova pasta (2)'
+codificacao = 'latin-1'  # Substitua pela codificação correta, se necessário
+
+# Lista de nomes dos arquivos
+nomes_arquivos = [
+    'Estabelecimento1.csv',
+    'Estabelecimento2.csv',
+    'Estabelecimento3.csv',
+    'Estabelecimento4.csv',
+    'Estabelecimento5.csv',
+    'Estabelecimento6.csv',
+    'Estabelecimento7.csv',
+    'Estabelecimento8.csv',
+    'Estabelecimento9.csv'
+]
+
+for nome_arquivo in nomes_arquivos:
+    caminho_arquivo = os.path.join(pasta_arquivos, nome_arquivo)
+
+    linhas_filtradas = []  # Lista para armazenar as linhas filtradas
+
+    with open(caminho_arquivo, 'r', encoding=codificacao) as arquivo:
+        leitor_csv = csv.reader(arquivo, delimiter=';')
+        cabecalho = next(leitor_csv)  # Lê o cabeçalho e avança para a próxima linha
+        coluna_cnae_principal = cabecalho.index('CNAE PRINCIPAL')  # Obtém o índice da coluna 'CNAE PRINCIPAL'
+
+        for linha in leitor_csv:
+            if '8650003' in linha[coluna_cnae_principal]:
+                linhas_filtradas.append(linha)
+
+    # Exibir a quantidade de linhas filtradas
+    quantidade_linhas_filtradas = len(linhas_filtradas)
+    print(f"Quantidade de linhas filtradas no arquivo {nome_arquivo}: {quantidade_linhas_filtradas}")
+
+    # Exibir as linhas filtradas em formato de tabela
+    print(tabulate(linhas_filtradas, headers=cabecalho))
+
+    # Exportar as linhas filtradas para um novo arquivo
+    caminho_arquivo_filtrado = caminho_arquivo.replace('.csv', '_Filtrado.csv')
+
+    with open(caminho_arquivo_filtrado, 'w', newline='', encoding=codificacao) as arquivo_filtrado:
+        escritor_csv = csv.writer(arquivo_filtrado, delimiter=';')
+        escritor_csv.writerow(cabecalho)  # Escreve o cabeçalho no arquivo filtrado
+        escritor_csv.writerows(linhas_filtradas)  # Escreve as linhas filtradas no arquivo filtrado
+
+    print(f"Base filtrada exportada para: {caminho_arquivo_filtrado}")
